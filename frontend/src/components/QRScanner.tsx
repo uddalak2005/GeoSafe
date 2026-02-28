@@ -74,6 +74,7 @@ const QRScanner: React.FC = () => {
 
   // ── Upload state ─────────────────────────────────────────
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraRequestInFlightRef = useRef(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -86,13 +87,13 @@ const QRScanner: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // ── Shared: parse JSON, update state, POST to backend ────
-  const submitToBackend = async (rawText: string) => {
+  const submitToBackend = async (rawText: string): Promise<boolean> => {
     let parsed: QRData;
     try {
       parsed = parseQRPayload(rawText);
     } catch (err: any) {
       setError(err.message);
-      return;
+      return false;
     }
     setQrData(parsed);
     setLoading(true);
@@ -101,8 +102,10 @@ const QRScanner: React.FC = () => {
     try {
       const data = await postToBackend(parsed);
       setSuccessMsg(data?.message ?? "Check-in successful");
+      return true;
     } catch (err: any) {
       setError(err.message ?? "Something went wrong. Please try again.");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -111,9 +114,21 @@ const QRScanner: React.FC = () => {
   // ── Camera: handle QrReader result ───────────────────────
   const handleCameraScan = async (result: any) => {
     if (!result?.text) return;
-    // Deduplicate: compare raw text against previously parsed workerId
+    if (!scanning || loading || successMsg || cameraRequestInFlightRef.current) {
+      return;
+    }
+
     if (qrData && result.text.includes(qrData.workerId)) return;
-    await submitToBackend(result.text);
+
+    cameraRequestInFlightRef.current = true;
+    try {
+      const success = await submitToBackend(result.text);
+      if (success) {
+        setScanning(false);
+      }
+    } finally {
+      cameraRequestInFlightRef.current = false;
+    }
   };
 
   // ── Upload: decode QR from image file ────────────────────
@@ -174,6 +189,7 @@ const QRScanner: React.FC = () => {
   // ── Reset everything ──────────────────────────────────────
   const handleReset = () => {
     setScanning(false);
+    cameraRequestInFlightRef.current = false;
     setUploadedFile(null);
     if (uploadPreview) URL.revokeObjectURL(uploadPreview);
     setUploadPreview(null);
@@ -272,11 +288,10 @@ const QRScanner: React.FC = () => {
             <button
               key={tab}
               onClick={() => switchTab(tab)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {activeTab === tab && (
                 <motion.div
@@ -481,11 +496,10 @@ const QRScanner: React.FC = () => {
                     onDragLeave={onDragLeave}
                     onDrop={onDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`w-full aspect-[4/3] sm:aspect-[16/9] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-8 cursor-pointer select-none transition-all duration-200 ${
-                      dragging
-                        ? "border-primary bg-primary/5 scale-[1.01]"
-                        : "border-border bg-slate-50/50 hover:bg-slate-50 hover:border-primary/40"
-                    }`}
+                    className={`w-full aspect-[4/3] sm:aspect-[16/9] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-8 cursor-pointer select-none transition-all duration-200 ${dragging
+                      ? "border-primary bg-primary/5 scale-[1.01]"
+                      : "border-border bg-slate-50/50 hover:bg-slate-50 hover:border-primary/40"
+                      }`}
                   >
                     <motion.div
                       animate={{ y: dragging ? -6 : 0 }}

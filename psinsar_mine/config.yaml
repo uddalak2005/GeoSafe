@@ -1,13 +1,11 @@
-
 aoi:
-  name: "MineSafe"
-  bbox: [82.53, 22.30, 82.66, 22.36]
-  wkt: "POLYGON((82.533 22.300, 82.658 22.300, 82.658 22.362, 82.533 22.362, 82.533 22.300))"
+  name: "Joshimath_Uttarakhand"
+  bbox: [79.52, 30.53, 79.61, 30.59]
+  wkt: "POLYGON((79.520 30.530, 79.610 30.530, 79.610 30.590, 79.520 30.590, 79.520 30.530))"
 
 time_range:
-  start: "2023-01-01"
+  start: "2022-01-01"
   end: "2023-12-31"
-
 
 sentinel1:
   platform: "S1"
@@ -22,7 +20,6 @@ hyp3:
   include_look_vectors: true
   include_inc_map: true
 
-  
   max_temp_baseline: 48
   max_n_secondaries: 3
   max_total_pairs: 200
