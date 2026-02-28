@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* MineSafe.ai — Official Safety Platform */
+    /* navy: #1b3f6e  |  steel: #3d7ea6  |  amber: #f59e0b  |  slate: #475569 */
+    /* background: #f8fafc  |  card: #ffffff  |  border: #e2e8f0 */
+
+    --navy: 214 59% 27%; /* #1b3f6e — authority navy      */
+    --navy-mid: 214 48% 38%; /* #3259a0 — mid navy            */
+    --navy-light: 214 42% 93%; /* #dce9f8 — pale navy tint      */
+    --steel: 203 45% 45%; /* #3d7ea6 — steel blue          */
+    --steel-light: 203 40% 94%; /* #e3f2fa — pale steel          */
+    --amber: 38 95% 53%; /* #f59e0b — safety amber        */
+    --amber-light: 38 95% 95%; /* #fef9ec — pale amber          */
+    --safe-green: 142 52% 36%; /* #2d8a52 — all-clear green     */
+    --warning-red: 0 74% 52%; /* #e83232 — hazard red          */
+    --slate: 215 19% 35%; /* #475569 — body text slate     */
+
+    /* ── Semantic tokens ────────────────────────────────── */
+    --background: 210 20% 98%; /* #f8fafc — cool off-white      */
+    --foreground: 214 40% 18%; /* #1e3553 — deep navy text      */
+
+    --card: 0 0% 100%; /* #ffffff — pure white          */
+    --card-foreground: 214 40% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 40% 18%;
+
+    /* Primary — Authority Navy */
+    --primary: 214 59% 27%; /* #1b3f6e */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 214 48% 38%;
+    --primary-dark: 214 65% 16%;
+
+    /* Secondary — Safety Amber */
+    --secondary: 38 95% 53%; /* #f59e0b */
+    --secondary-foreground: 214 59% 14%;
+    --secondary-light: 38 95% 95%;
+
+    /* Accent — Steel Blue */
+    --accent: 203 45% 45%; /* #3d7ea6 */
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 203 40% 94%;
+
+    --muted: 214 18% 94%; /* very light blue-gray          */
+    --muted-foreground: 215 16% 48%;
+
+    --destructive: 0 74% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%; /* #d5e0ef */
+    --input: 214 22% 97%;
+    --ring: 214 59% 27%;
+
+    /* ── Gradients ───────────────────────────────────────── */
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(214 59% 22%),
+      hsl(214 48% 32%),
+      hsl(203 45% 42%)
+    );
+    --gradient-ore: linear-gradient(
+      90deg,
+      hsl(214 59% 27%),
+      hsl(203 45% 40%),
+      hsl(38 95% 53%)
+    );
+    --gradient-depth: linear-gradient(
+      180deg,
+      hsl(210 20% 98%),
+      hsl(214 20% 93%)
+    );
+    --gradient-mineral: radial-gradient(
+      ellipse at top right,
+      hsl(38 95% 95% / 0.7),
+      hsl(203 40% 94% / 0.5),
+      transparent 65%
+    );
+
+    /* ── Shadows (soft, layered) ─────────────────────────── */
+    --shadow-excavation:
+      0 4px 16px hsl(214 40% 16% / 0.1), 0 12px 36px hsl(214 40% 16% / 0.07);
+    --shadow-ore: 0 4px 20px hsl(38 95% 53% / 0.22);
+    --shadow-tunnel: inset 0 2px 6px hsl(214 40% 16% / 0.07);
+    --shadow-equipment:
+      0 2px 8px hsl(214 59% 27% / 0.1), 0 6px 20px hsl(214 59% 27% / 0.07);
+
+    /* ── Transitions ─────────────────────────────────────── */
+    --transition-excavate: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-drill: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-seismic: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+
+    /* ── Texture Patterns (ultra-subtle on light) ────────── */
+    --pattern-rock: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231b3f6e' fill-opacity='0.018'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20v20h40V20H20z'/%3E%3C/g%3E%3C/svg%3E");
+    --pattern-ore: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f59e0b' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    --pattern-seismic: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%233d7ea6' fill-opacity='0.05'%3E%3Cpath d='M0 0h20L0 20z'/%3E%3C/g%3E%3C/svg%3E");
+
+    --radius: 0.5rem;
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    --sidebar-background: 214 59% 20%;
+    --sidebar-foreground: 214 30% 92%;
+    --sidebar-primary: 38 95% 53%;
+    --sidebar-primary-foreground: 214 59% 12%;
+    --sidebar-accent: 214 48% 28%;
+    --sidebar-accent-foreground: 214 20% 94%;
+    --sidebar-border: 214 50% 16%;
+    --sidebar-ring: 38 95% 53%;
+  }
+
+  .dark {
+    --background: 214 35% 10%;
+    --foreground: 214 18% 92%;
+
+    --card: 214 32% 14%;
+    --card-foreground: 214 18% 92%;
+
+    --popover: 214 32% 14%;
+    --popover-foreground: 214 18% 92%;
+
+    --primary: 38 95% 53%;
+    --primary-foreground: 214 59% 10%;
+
+    --secondary: 214 42% 24%;
+    --secondary-foreground: 214 18% 90%;
+
+    --muted: 214 28% 17%;
+    --muted-foreground: 214 16% 58%;
+
+    --accent: 203 40% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 68% 42%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 28% 22%;
+    --input: 214 28% 17%;
+    --ring: 38 95% 53%;
+
+    --sidebar-background: 214 40% 8%;
+    --sidebar-foreground: 214 18% 90%;
+    --sidebar-primary: 38 95% 53%;
+    --sidebar-primary-foreground: 214 59% 10%;
+    --sidebar-accent: 214 35% 15%;
+    --sidebar-accent-foreground: 214 18% 90%;
+    --sidebar-border: 214 35% 13%;
+    --sidebar-ring: 38 95% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Mining-themed gradient utilities */
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-ore {
+    background: var(--gradient-ore);
+  }
+
+  .bg-gradient-depth {
+    background: var(--gradient-depth);
+  }
+
+  .bg-gradient-mineral {
+    background: var(--gradient-mineral);
+  }
+
+  /* Mining texture patterns */
+  .bg-pattern-rock {
+    background-image: var(--pattern-rock);
+  }
+
+  .bg-pattern-ore {
+    background-image: var(--pattern-ore);
+  }
+
+  .bg-pattern-seismic {
+    background-image: var(--pattern-seismic);
+  }
+
+  /* Mining-specific shadows */
+  .shadow-excavation {
+    box-shadow: var(--shadow-excavation);
+  }
+
+  .shadow-ore {
+    box-shadow: var(--shadow-ore);
+  }
+
+  .shadow-tunnel {
+    box-shadow: var(--shadow-tunnel);
+  }
+
+  .shadow-equipment {
+    box-shadow: var(--shadow-equipment);
+  }
+
+  /* Mining-themed transitions */
+  .transition-excavate {
+    transition: var(--transition-excavate);
+  }
+
+  .transition-drill {
+    transition: var(--transition-drill);
+  }
+
+  .transition-seismic {
+    transition: var(--transition-seismic);
+  }
+
+  /* Mining-specific hover effects */
+  .hover-excavate {
+    @apply transition-excavate hover:scale-105 hover:shadow-excavation;
+  }
+
+  .hover-ore-glow {
+    @apply transition-drill hover:shadow-ore;
+  }
+
+  .hover-seismic {
+    @apply transition-seismic hover:scale-110;
+  }
+
+  /* Safety status badges */
+  .status-safe {
+    color: hsl(var(--safe-green));
+    background-color: hsl(142 52% 36% / 0.1);
+    border-color: hsl(142 52% 36% / 0.25);
+  }
+
+  .status-warning {
+    color: hsl(38 95% 40%);
+    background-color: hsl(var(--amber-light));
+    border-color: hsl(38 95% 53% / 0.3);
+  }
+
+  .status-danger {
+    color: hsl(var(--warning-red));
+    background-color: hsl(0 74% 52% / 0.08);
+    border-color: hsl(0 74% 52% / 0.25);
+  }
+
+  /* Geological layer effects */
+  .geological-layer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .geological-layer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--pattern-rock);
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  /* Mining equipment styling */
+  .mining-panel {
+    @apply bg-card border border-border shadow-equipment;
+  }
+
+  /* Ore vein effect */
+  .ore-vein {
+    position: relative;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      hsl(var(--secondary) / 0.15) 50%,
+      transparent 70%
+    );
+  }
+
+  /* Seismic wave animation */
+  @keyframes seismic-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+  }
+
+  .seismic-pulse {
+    animation: seismic-pulse 2s ease-in-out infinite;
+  }
+
+  /* Depth layers — light surface steps */
+  .depth-layer-1 {
+    background: hsl(210 20% 98%);
+  }
+  .depth-layer-2 {
+    background: hsl(214 20% 96%);
+  }
+  .depth-layer-3 {
+    background: hsl(214 20% 93%);
+  }
+  .depth-layer-4 {
+    background: hsl(214 22% 89%);
+  }
+}
