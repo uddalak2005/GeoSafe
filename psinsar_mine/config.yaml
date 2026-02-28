@@ -1,0 +1,50 @@
+
+aoi:
+  name: "MineSafe"
+  bbox: [82.53, 22.30, 82.66, 22.36]
+  wkt: "POLYGON((82.533 22.300, 82.658 22.300, 82.658 22.362, 82.533 22.362, 82.533 22.300))"
+
+time_range:
+  start: "2023-01-01"
+  end: "2023-12-31"
+
+
+sentinel1:
+  platform: "S1"
+  beam_mode: "IW"
+  polarization: "VV"
+  flight_direction: "DESCENDING"
+
+hyp3:
+  job_name: "MyMine_PSInSAR"
+  apply_water_mask: true
+  include_dem: true
+  include_look_vectors: true
+  include_inc_map: true
+
+  
+  max_temp_baseline: 48
+  max_n_secondaries: 3
+  max_total_pairs: 200
+  budget_cap_credits: 300
+
+# --- PSInSAR / MintPy Parameters ---
+mintpy:
+  amplitude_dispersion_threshold: 0.25
+  min_coherence: 0.7
+  reference_lalo: null
+  atm_correction: "pyaps"
+
+# --- Output Settings ---
+output:
+  # FIXED: was "./interferograms/notebooks" which caused all path errors
+  # Folder structure will be:
+  #   data/
+  #     interferograms/   <- your 57 extracted S1AA folders go here
+  #     mintpy_stack/     <- created by preprocessing.py
+  data_dir: "./data"
+
+  results_dir: "./outputs"
+  alert_threshold_mm_per_year: 10.0
+  generate_html_map: true
+  export_csv: true
