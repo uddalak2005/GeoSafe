@@ -529,8 +529,8 @@ const Dashboard = () => {
               className="space-y-6"
             >
               <HTMLMapViewer
-                apiEndpoint="/heatmap"
-                baseUrl="https://agentsay-geospacialdata.hf.space"
+                apiEndpoint="/"
+                baseUrl="https://agentsay-htmlteansponder.hf.space"
                 htmlUrl="/singrauli_heatmap.html"
                 title="Live Geospatial PS Data Analysis"
                 description="Real-time ML-powered geological monitoring with live PS data from HuggingFace"

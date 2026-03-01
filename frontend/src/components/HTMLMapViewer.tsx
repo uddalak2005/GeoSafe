@@ -42,7 +42,7 @@ interface HTMLMapViewerProps {
 const HTMLMapViewer: React.FC<HTMLMapViewerProps> = ({
   htmlUrl,
   apiEndpoint = "/heatmap",
-  baseUrl = "https://agentsay-geospacialdata.hf.space", // Production HuggingFace server
+  baseUrl = "https://agentsay-htmlteansponder.hf.space", // Production HuggingFace server
   title = "Real-time ML Heatmap Analysis",
   description = "Live geological ML data visualization with predictive analytics",
   refreshInterval = 30, // 30 seconds default
@@ -234,7 +234,7 @@ const HTMLMapViewer: React.FC<HTMLMapViewerProps> = ({
                 {(() => {
                   if (dataSources.length === 1) {
                     const currentOption = dataSourceOptions.find(
-                      (option) => option.value === dataSources[0]
+                      (option) => option.value === dataSources[0],
                     );
                     const IconComponent = currentOption?.icon || Satellite;
                     return (
@@ -448,7 +448,7 @@ const HTMLMapViewer: React.FC<HTMLMapViewerProps> = ({
                 <div className="font-medium flex flex-col gap-1 items-end">
                   {dataSources.map((source) => {
                     const option = dataSourceOptions.find(
-                      (opt) => opt.value === source
+                      (opt) => opt.value === source,
                     );
                     if (!option) return null;
                     const IconComponent = option.icon;
@@ -546,17 +546,17 @@ const HTMLMapViewer: React.FC<HTMLMapViewerProps> = ({
                     isOnline
                       ? "text-primary"
                       : error
-                      ? "text-destructive"
-                      : "text-muted-foreground"
+                        ? "text-destructive"
+                        : "text-muted-foreground"
                   }`}
                 >
                   {isLoading
                     ? "Loading..."
                     : isOnline
-                    ? "Online"
-                    : error
-                    ? "Error"
-                    : "Offline"}
+                      ? "Online"
+                      : error
+                        ? "Error"
+                        : "Offline"}
                 </span>
               </div>
               <div className="flex justify-between">
