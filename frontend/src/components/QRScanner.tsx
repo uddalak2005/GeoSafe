@@ -19,7 +19,7 @@ import {
   Camera,
 } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:3000/worker";
+const BACKEND_URL = `${import.meta.env.VITE_API_URL}/worker`;
 
 interface QRData {
   name: string;
@@ -114,7 +114,12 @@ const QRScanner: React.FC = () => {
   // ── Camera: handle QrReader result ───────────────────────
   const handleCameraScan = async (result: any) => {
     if (!result?.text) return;
-    if (!scanning || loading || successMsg || cameraRequestInFlightRef.current) {
+    if (
+      !scanning ||
+      loading ||
+      successMsg ||
+      cameraRequestInFlightRef.current
+    ) {
       return;
     }
 
@@ -288,10 +293,11 @@ const QRScanner: React.FC = () => {
             <button
               key={tab}
               onClick={() => switchTab(tab)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === tab
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
+              className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === tab
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
               {activeTab === tab && (
                 <motion.div
@@ -496,10 +502,11 @@ const QRScanner: React.FC = () => {
                     onDragLeave={onDragLeave}
                     onDrop={onDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`w-full aspect-[4/3] sm:aspect-[16/9] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-8 cursor-pointer select-none transition-all duration-200 ${dragging
-                      ? "border-primary bg-primary/5 scale-[1.01]"
-                      : "border-border bg-slate-50/50 hover:bg-slate-50 hover:border-primary/40"
-                      }`}
+                    className={`w-full aspect-[4/3] sm:aspect-[16/9] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-8 cursor-pointer select-none transition-all duration-200 ${
+                      dragging
+                        ? "border-primary bg-primary/5 scale-[1.01]"
+                        : "border-border bg-slate-50/50 hover:bg-slate-50 hover:border-primary/40"
+                    }`}
                   >
                     <motion.div
                       animate={{ y: dragging ? -6 : 0 }}

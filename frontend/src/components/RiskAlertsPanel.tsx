@@ -42,8 +42,7 @@ interface RiskAlertsPanelProps {
 
 const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
   refreshInterval = 10,
-  serverUrl = (import.meta as any).env?.VITE_MINERS_SERVER_URL ||
-    "http://localhost:3000",
+  serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000",
   className = "",
 }) => {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -87,7 +86,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
         {
           timeout: 15000,
           headers: { Accept: "application/json" },
-        }
+        },
       );
 
       if (response.data.success && response.data.data) {
@@ -95,7 +94,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
 
         // Check if any worker has riskZone field
         const anyRiskField = workers.some((w) =>
-          Object.prototype.hasOwnProperty.call(w, "riskZone")
+          Object.prototype.hasOwnProperty.call(w, "riskZone"),
         );
         setHasRiskField(anyRiskField);
         setWorkers(workers);
@@ -164,7 +163,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
       setError(
         err?.message?.includes("timeout")
           ? "Request timeout"
-          : "Failed to load worker risk data"
+          : "Failed to load worker risk data",
       );
     } finally {
       setLoading(false);
@@ -189,7 +188,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
   const timeAgo = (ts: string): string => {
     const diffSec = Math.max(
       0,
-      Math.floor((Date.now() - Date.parse(ts)) / 1000)
+      Math.floor((Date.now() - Date.parse(ts)) / 1000),
     );
     if (diffSec < 60) return `${diffSec}s ago`;
     const m = Math.floor(diffSec / 60);
@@ -201,9 +200,9 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
   const sortedRiskWorkers: Worker[] = React.useMemo(
     () =>
       [...riskWorkers].sort(
-        (a, b) => Date.parse(b.lastUpdated) - Date.parse(a.lastUpdated)
+        (a, b) => Date.parse(b.lastUpdated) - Date.parse(a.lastUpdated),
       ),
-    [riskWorkers]
+    [riskWorkers],
   );
   const [query, setQuery] = useState("");
   const [onlyNew, setOnlyNew] = useState(false);
@@ -340,7 +339,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
                           <div className="flex items-center gap-3">
                             <div
                               className={`w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center border border-destructive/40 ${pulseIfNew(
-                                w
+                                w,
                               )}`}
                             >
                               <HardHat className="w-6 h-6 text-destructive" />
@@ -521,7 +520,7 @@ const RiskAlertsPanel: React.FC<RiskAlertsPanelProps> = ({
                             <div className="font-mono text-xs text-foreground">
                               {log.lat !== undefined && log.lng !== undefined
                                 ? `${log.lat.toFixed(6)}°N, ${log.lng.toFixed(
-                                    6
+                                    6,
                                   )}°E`
                                 : "Location unavailable"}
                             </div>

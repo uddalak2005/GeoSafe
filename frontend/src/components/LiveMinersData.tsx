@@ -50,8 +50,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
   className = "",
   refreshInterval = 30,
   // Default to local development server; override via prop or Vite env var if set
-  serverUrl = (import.meta as any).env?.VITE_MINERS_SERVER_URL ||
-  "http://localhost:3000",
+  serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000",
 }) => {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
@@ -198,8 +197,9 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
       setError(null);
 
       console.log(
-        `Attempting to fetch data from: ${serverUrl}/worker (attempt ${retryCount + 1
-        })`
+        `Attempting to fetch data from: ${serverUrl}/worker (attempt ${
+          retryCount + 1
+        })`,
       );
 
       const response = await axios.get<WorkerApiResponse>(
@@ -210,7 +210,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       console.log("API Response:", response.data);
@@ -218,18 +218,18 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
       if (response.data.success && response.data.data) {
         console.log(
           "Raw server response:",
-          JSON.stringify(response.data, null, 2)
+          JSON.stringify(response.data, null, 2),
         );
         console.log(
           `Server returned ${response.data.data.length} workers:`,
-          response.data.data.map((w) => ({ name: w.name, id: w.workerId }))
+          response.data.data.map((w) => ({ name: w.name, id: w.workerId })),
         );
 
         setWorkers(response.data.data);
         setIsOnline(true);
         setLastUpdate(new Date().toLocaleTimeString());
         console.log(
-          `Successfully fetched ${response.data.data.length} workers from server`
+          `Successfully fetched ${response.data.data.length} workers from server`,
         );
       } else {
         console.log("Invalid response format:", response.data);
@@ -250,8 +250,9 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
       } else if (err.response?.data?.message?.includes("buffering timed out")) {
         errorMessage = "Database timeout - Server is processing, please wait";
       } else if (err.response?.data?.success === false) {
-        errorMessage = `Server error: ${err.response.data.message || "Unknown error"
-          }`;
+        errorMessage = `Server error: ${
+          err.response.data.message || "Unknown error"
+        }`;
       }
 
       // Retry logic for database timeouts
@@ -261,7 +262,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
           err.code === "ECONNABORTED")
       ) {
         console.log(
-          `Retrying in 2 seconds... (${retryCount + 1}/${maxRetries})`
+          `Retrying in 2 seconds... (${retryCount + 1}/${maxRetries})`,
         );
         setTimeout(() => fetchWorkerData(retryCount + 1), 2000);
         return;
@@ -278,7 +279,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
         console.log(`Loaded ${mockWorkers.length} mock workers`);
       } else {
         console.log(
-          `Keeping existing ${workers.length} workers due to server error`
+          `Keeping existing ${workers.length} workers due to server error`,
         );
       }
     } finally {
@@ -344,7 +345,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
   };
 
   const getWorkerStatus = (
-    lastUpdated: string
+    lastUpdated: string,
   ): { status: string; color: string; icon: any } => {
     const now = new Date();
     const time = new Date(lastUpdated);
@@ -500,8 +501,9 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                   <WifiOff className="w-4 h-4 text-destructive" />
                 )}
                 <span
-                  className={`text-sm font-medium ${isOnline ? "text-green-400" : "text-destructive"
-                    }`}
+                  className={`text-sm font-medium ${
+                    isOnline ? "text-green-400" : "text-destructive"
+                  }`}
                 >
                   {isOnline ? "Live Data" : "Demo Mode"}
                 </span>
@@ -526,7 +528,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                   variant="outline"
                   onClick={() => {
                     console.log(
-                      "Force refresh - clearing workers and fetching fresh data"
+                      "Force refresh - clearing workers and fetching fresh data",
                     );
                     setWorkers([]);
                     setIsOnline(false);
@@ -602,7 +604,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                 <div className="text-3xl font-bold text-green-400 mb-1">
                   {
                     workers.filter(
-                      (w) => getWorkerStatus(w.lastUpdated).status === "Active"
+                      (w) => getWorkerStatus(w.lastUpdated).status === "Active",
                     ).length
                   }
                 </div>
@@ -648,7 +650,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                 <div className="text-3xl font-bold text-amber-400 mb-1">
                   {
                     workers.filter((w) =>
-                      w.role.toLowerCase().includes("safety")
+                      w.role.toLowerCase().includes("safety"),
                     ).length
                   }
                 </div>
@@ -674,8 +676,9 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-3 h-3 rounded-full ${isOnline ? "bg-green-400 animate-pulse" : "bg-red-400"
-                    }`}
+                  className={`w-3 h-3 rounded-full ${
+                    isOnline ? "bg-green-400 animate-pulse" : "bg-red-400"
+                  }`}
                 ></div>
                 <div>
                   <div className="text-sm font-semibold text-foreground">
@@ -773,12 +776,13 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                           const status = getWorkerStatus(worker.lastUpdated);
                           return (
                             <div
-                              className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${status.status === "Active"
+                              className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${
+                                status.status === "Active"
                                   ? "bg-green-400"
                                   : status.status === "Recent"
                                     ? "bg-yellow-400"
                                     : "bg-red-400"
-                                }`}
+                              }`}
                             ></div>
                           );
                         })()}
@@ -818,7 +822,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                         </span>
                         <span
                           className={`text-sm px-3 py-1 rounded-full font-medium ${getStatusColor(
-                            worker.role
+                            worker.role,
                           )}`}
                         >
                           {worker.role}
@@ -843,7 +847,7 @@ const LiveMinersData: React.FC<LiveMinersDataProps> = ({
                         </div>
                         <div className="text-sm font-mono text-foreground">
                           {formatCoordinates(
-                            worker.currentLocation.coordinates
+                            worker.currentLocation.coordinates,
                           )}
                         </div>
                       </div>

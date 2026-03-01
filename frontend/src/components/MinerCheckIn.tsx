@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Camera, StopCircle, Video, AlertCircle } from "lucide-react";
 
 const FRAME_INTERVAL_MS = 500; // send 1 frame every 500ms
-const BACKEND_ENDPOINT = "http://localhost:8000/detect"; // change this
+const BACKEND_ENDPOINT = `${import.meta.env.VITE_CV_API_URL}/detect`;
 
 const LiveRecorder: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -76,7 +76,7 @@ const LiveRecorder: React.FC = () => {
         formData.append("frame", blob, "frame.jpg");
 
         try {
-          const res = await fetch("http://localhost:8000/detect", {
+          const res = await fetch(BACKEND_ENDPOINT, {
             method: "POST",
             body: formData, // DO NOT set headers
           });
