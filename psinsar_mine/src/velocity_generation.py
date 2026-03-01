@@ -39,7 +39,7 @@ ts_long.csv SCHEMA (what each column means)
 
 Usage:
   python src/04_velocity_generation.py
-  python src/04_velocity_generation.py --config config.yaml --demo
+  python src/velocity_generation.py --config config.yaml --demo
 """
 
 import os
@@ -425,26 +425,75 @@ def generate_demo_data(cfg: dict):
 
     np.random.seed(42)
     velocity = np.random.normal(0, 1.5, (H, W))
-    cy, cx   = H // 2, W // 2
     Y, X     = np.ogrid[:H, :W]
-    bowl     = -28 * np.exp(-((Y - cy)**2 / 800  + (X - cx)**2   / 800))
-    bowl2    = -12 * np.exp(-((Y - cy//2)**2 / 200 + (X - cx*1.5)**2 / 200))
-    velocity += bowl + bowl2
-    velocity[velocity < -55] = np.nan
 
-    dates    = pd.date_range("2022-01-01", periods=n_epochs, freq="12D")
+    # --- Joshimath-realistic displacement field ---
+
+    # Primary subsidence zone: upper-town (north = low Y), offset west of center
+    # Joshimath town sits on an ancient landslide deposit on a steep ridge
+    cy_main, cx_main = int(H * 0.35), int(W * 0.42)
+    bowl_main = -45 * np.exp(
+        -((Y - cy_main)**2 / 300 + (X - cx_main)**2 / 180)
+    )
+
+    # Secondary crack zone: elongated along slope direction (NE-SW strike)
+    # Mimics the linear crack pattern seen in Joshimath Jan 2023
+    cy2, cx2 = int(H * 0.48), int(W * 0.55)
+    bowl2 = -18 * np.exp(
+        -((Y - cy2)**2 / 120 + (X - cx2)**2 / 350)   # elongated E-W
+    )
+
+    # Tertiary: lower slope toe bulge (uplift due to compression at base)
+    cy3, cx3 = int(H * 0.72), int(W * 0.50)
+    bulge = +8 * np.exp(
+        -((Y - cy3)**2 / 200 + (X - cx3)**2 / 400)
+    )
+
+    # Terrain-correlated noise: steeper slope = more variability
+    slope_mask = np.linspace(0.5, 2.5, H)[:, None]  # increases downslope
+    terrain_noise = np.random.normal(0, 1.0, (H, W)) * slope_mask
+
+    velocity += bowl_main + bowl2 + bulge + terrain_noise
+
+    # Mask out stable ridgeline (top strip) and valley floor (bottom strip)
+    velocity[:int(H*0.08), :]  = np.nan   # ridge crest — no signal
+    velocity[int(H*0.88):, :]  = np.nan   # river valley — incoherent
+    velocity[velocity < -68]   = np.nan   # decorrelated pixels
+
+    # --- Temporal evolution: accelerating subsidence post-monsoon ---
+    dates     = pd.date_range("2022-01-01", periods=n_epochs, freq="12D")
     date_strs = np.array([d.strftime("%Y%m%d") for d in dates])
-
-    ts_3d     = np.zeros((n_epochs, H, W))
     doy_vals  = dates.day_of_year.values
-    seas_aps  = 3.0 * np.sin(2 * np.pi * doy_vals / 365.25)
+
+    # Monsoon loading effect: acceleration Jun-Sep each year
+    def monsoon_factor(date):
+        doy = date.day_of_year
+        # peak ~day 200 (mid-July), tapering
+        return 1.0 + 1.8 * np.exp(-((doy - 200)**2) / 800)
+
+    # APS: stronger in monsoon (higher humidity = larger tropospheric delay)
+    seas_aps  = 4.5 * np.sin(2 * np.pi * doy_vals / 365.25)
+    # add inter-annual trend: 2023 worse than 2022 (mirrors real event)
+    year_ramp = np.array([(d.year - 2022) * 0.8 for d in dates])
+
+    ts_3d = np.zeros((n_epochs, H, W))
 
     for i in range(1, n_epochs):
-        dt = (dates[i] - dates[i-1]).days
-        ts_3d[i] = (ts_3d[i-1]
-                    + velocity / (365.25 / dt)
-                    + np.random.normal(0, 0.5, (H, W))
-                    + (seas_aps[i] - seas_aps[i-1]))
+        dt  = (dates[i] - dates[i-1]).days
+        mf  = monsoon_factor(dates[i])
+
+        # Spatially variable acceleration: main bowl accelerates more
+        accel_map = 1.0 + 0.6 * np.exp(
+            -((Y - cy_main)**2 / 400 + (X - cx_main)**2 / 250)
+        )
+
+        ts_3d[i] = (
+            ts_3d[i-1]
+            + (velocity * accel_map * mf) / (365.25 / dt)
+            + np.random.normal(0, 0.4, (H, W))             # measurement noise
+            + (seas_aps[i] - seas_aps[i-1])                # APS
+            + year_ramp[i] - year_ramp[i-1]                # inter-annual
+        )
 
     meta = {
         "X_FIRST": bbox[0], "Y_FIRST": bbox[3],
@@ -452,9 +501,25 @@ def generate_demo_data(cfg: dict):
         "Y_STEP": -(bbox[3] - bbox[1]) / H,
     }
 
-    coherence = np.clip(0.85 - 0.3 * np.exp(-((Y-cy)**2/1200 + (X-cx)**2/1200)), 0.3, 1.0).astype(np.float32)
-    dem       = (500 + 80 * (Y / H) - 40 * (X / W) + np.random.normal(0, 2, (H, W))).astype(np.float32)
-    inc       = np.full((H, W), 38.5, dtype=np.float32)
+    # Coherence: low on steep slopes and deep subsidence zones
+    steep_penalty = np.linspace(0.0, 0.25, H)[:, None]
+    coherence = np.clip(
+        0.88
+        - 0.45 * np.exp(-((Y - cy_main)**2 / 350 + (X - cx_main)**2 / 200))
+        - 0.20 * np.exp(-((Y - cy2)**2    / 150 + (X - cx2)**2    / 400))
+        - steep_penalty,
+        0.15, 1.0
+    ).astype(np.float32)
+
+    # DEM: ridge in north, valley in south, Joshimath sits ~1875m ASL
+    dem = (
+        1875
+        + 220 * (1 - Y / H)          # north ridge ~2095m, south valley ~1875m
+        - 60  * np.abs(X/W - 0.5)    # lateral valley shape
+        + np.random.normal(0, 3, (H, W))
+    ).astype(np.float32)
+
+    inc = np.full((H, W), 38.5, dtype=np.float32)
 
     return velocity, date_strs, ts_3d, meta, coherence, dem, inc
 

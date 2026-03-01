@@ -11,6 +11,7 @@ class WorkerController {
 
       res.status(201).json({ success: true, data: worker });
     } catch (error) {
+      console.log(error)
       res.status(400).json({ success: false, message: error.message });
     }
   }
